@@ -11,6 +11,7 @@ export default class VehicleModel extends Model {
     @attr('string') uuid;
     @attr('string') public_id;
     @attr('string') internal_id;
+    @attr('string') fleet_uuid;
     @attr('string') company_uuid;
     @attr('string') photo_uuid;
     @attr('string') vendor_uuid;
@@ -20,6 +21,7 @@ export default class VehicleModel extends Model {
 
     /** @relationships */
     @belongsTo('driver', { async: false }) driver;
+    @belongsTo('fleet', { async: true, inverse: 'vehicles' }) fleet;
     @belongsTo('vendor', { async: false }) vendor;
     @hasMany('device', { async: false }) devices;
     @hasMany('custom-field-value', { async: false }) custom_field_values;
@@ -51,6 +53,7 @@ export default class VehicleModel extends Model {
     @attr('string') model;
     @attr('string') model_type;
     @attr('string') year;
+    @attr('string') version;
     @attr('string') trim;
     @attr('string') color;
     @attr('string') transmission;
@@ -87,6 +90,8 @@ export default class VehicleModel extends Model {
     @attr('string') estimated_service_life_distance_unit;
     @attr('number') estimated_service_life_distance;
     @attr('number') estimated_service_life_months;
+    @attr('date') loan_last_payment;
+    @attr('string') loan_provider;
 
     /** Capacity & dimensions */
     @attr('number') cargo_volume;
@@ -145,6 +150,14 @@ export default class VehicleModel extends Model {
     /** @dates */
     @attr('date') purchased_at;
     @attr('date') lease_expires_at;
+    @attr('date') assurance_date;
+    @attr('date') assurance_expiry;
+    @attr('date') vignette_date;
+    @attr('date') vignette_expiry;
+    @attr('date') visite_technique_date;
+    @attr('date') visite_technique_expiry;
+    @attr('date') carte_grise_date;
+    @attr('date') carte_grise_expiry;
     @attr('date') deleted_at;
     @attr('date') created_at;
     @attr('date') updated_at;
@@ -271,5 +284,24 @@ export default class VehicleModel extends Model {
         this.devices = devices;
 
         return devices;
+    }
+
+    loadFleet() {
+        const owner = getOwner(this);
+        const store = owner.lookup('service:store');
+
+        return new Promise((resolve, reject) => {
+            if (isRelationMissing(this, 'fleet')) {
+                return store
+                    .findRecord('fleet', this.fleet_uuid)
+                    .then((fleet) => {
+                        this.fleet = fleet;
+                        resolve(fleet);
+                    })
+                    .catch(reject);
+            }
+
+            resolve(this.fleet);
+        });
     }
 }

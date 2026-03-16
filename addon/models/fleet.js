@@ -5,6 +5,7 @@ import { format as formatDate, isValid as isValidDate, formatDistanceToNow } fro
 export default class FleetModel extends Model {
     /** @ids */
     @attr('string') public_id;
+    @attr('string') uuid;
     @attr('string') company_uuid;
     @attr('string') image_uuid;
     @attr('string') service_area_uuid;
@@ -18,12 +19,13 @@ export default class FleetModel extends Model {
     @belongsTo('zone') zone;
     @belongsTo('fleet', { inverse: 'subfleets', async: false }) parent_fleet;
     @hasMany('fleet', { inverse: 'parent_fleet' }) subfleets;
-    @hasMany('driver') drivers;
-    @hasMany('vehicle') vehicles;
+    // @hasMany('driver') drivers;
+    @hasMany('vehicle', { async: true, inverse: 'fleet' }) vehicles;
     @hasMany('custom-field-value', { async: false }) custom_field_values;
 
     /** @attributes */
-    @attr('number') drivers_count;
+    @attr('array') vehicles_ids;
+    @attr('number') drivers_count;  
     @attr('number') drivers_online_count;
     @attr('number') vehicles_count;
     @attr('number') vehicles_online_count;
@@ -33,6 +35,10 @@ export default class FleetModel extends Model {
     @attr('string') task;
     @attr('string') status;
     @attr('string') slug;
+    @attr('string') fleet_level;
+    @attr('string') country;
+    @attr('string') city;
+    @attr('boolean') draft;
 
     /** @dates */
     @attr('date') deleted_at;
