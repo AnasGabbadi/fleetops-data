@@ -32,6 +32,10 @@ export default class FuelReportModel extends Model {
     @attr('point') location;
     @attr('raw') meta;
 
+    // Nouveaux attributs pour l'image
+    @attr('string') receiptImage;
+    @attr('string') receiptImageUrl;
+
     /** @dates */
     @attr('date') deleted_at;
     @attr('date') created_at;
